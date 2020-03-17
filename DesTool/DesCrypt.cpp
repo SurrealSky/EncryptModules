@@ -42,7 +42,7 @@ void CDesCrypt::SetKey(unsigned char *sid,unsigned int len)
 
 void CDesCrypt::SetIv(unsigned char *iv,unsigned int len)
 {
-	ASSERT(len <= DES_KEY_SZ);
+	if(len>DES_KEY_SZ) len = DES_KEY_SZ;
 	memset(ivec, 0, DES_KEY_SZ);
 	memcpy(ivec, iv, len);
 }
