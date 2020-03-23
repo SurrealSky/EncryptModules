@@ -33,10 +33,11 @@ public:
 	CEdit mKey;
 	CEdit mIv;
 	CButton mCheckHex;
+	CString strSSLeay_version;
+	CButton m3DesCheck;
 public:
 	std::string HexToStr(BYTE *pbDest, int nLen);
 	std::string StrToHex(BYTE *pbDest, int nLen);
 	std::string MyWideCharToMultiByte(BYTE *pbDest, int nLen);
 	std::string MyMultiByteToWideChar(BYTE *pbDest, int nLen);
-	CString strSSLeay_version;
 };

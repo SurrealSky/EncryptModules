@@ -33,6 +33,7 @@ void CDesPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT2, mIv);
 	DDX_Control(pDX, IDC_CHECK1, mCheckHex);
 	DDX_Text(pDX, IDC_EDIT3, strSSLeay_version);
+	DDX_Control(pDX, IDC_CHECK2, m3DesCheck);
 }
 
 
@@ -78,6 +79,7 @@ BOOL CDesPanel::OnInitDialog()
 	pHexControl1.SetData( buffer2, sizeof(buffer2));
 
 	mCheckHex.SetCheck(FALSE);
+	m3DesCheck.SetCheck(FALSE);
 	mKey.SetWindowTextW(_T("12345678"));
 	mIv.SetWindowTextW(_T("12345678"));
 
@@ -89,6 +91,9 @@ BOOL CDesPanel::OnInitDialog()
 //加密
 void CDesPanel::OnBnClickedButton1()
 {
+	//取出3des标识
+	bool is3Des = m3DesCheck.GetCheck();
+	
 	//取出密钥
 	CString strKey = _T("");
 	mKey.GetWindowTextW(strKey);
@@ -108,6 +113,36 @@ void CDesPanel::OnBnClickedButton1()
 		mb_Iv = StrToHex((BYTE*)mb_Iv.c_str(), mb_Iv.length());
 	}
 
+	CDesCrypt mCDesCrypt;
+	//设置是否3des
+	mCDesCrypt.Set3Des(is3Des);
+	//设置加密模式
+	CString strEncryptMode = _T("");
+	EncryptMode.GetWindowTextW(strEncryptMode);
+	if (strEncryptMode == "ECB")
+	{
+		mCDesCrypt.SetMode(MODE_ECB);
+	}
+	else if (strEncryptMode == "CBC")
+	{
+		mCDesCrypt.SetMode(MODE_CBC);
+		mCDesCrypt.SetIv((unsigned char*)mb_Iv.c_str(), mb_Iv.length());
+	}
+	else if (strEncryptMode == "CTR")
+	{
+		mCDesCrypt.SetMode(MODE_CTR);
+	}
+	else if (strEncryptMode == "OFB")
+	{
+		mCDesCrypt.SetMode(MODE_OFB);
+	}
+	else if (strEncryptMode == "CFB")
+	{
+		mCDesCrypt.SetMode(MODE_CFB);
+	}
+	//设置密钥
+	mCDesCrypt.SetKey((unsigned char*)mb_Key.c_str(), mb_Key.length());
+	
 	//取出源数据
 	UINT srclen = pHexControl1.GetDataLen();
 	if (srclen == 0)
@@ -119,9 +154,7 @@ void CDesPanel::OnBnClickedButton1()
 	memset(srcBuffer, 0, srclen);
 	pHexControl1.GetData(srcBuffer, srclen);
 
-	
-	CDesCrypt mCDesCrypt;
-	//填充
+	//源数据填充
 	CString strPaddingType = _T("");
 	mPadding.GetLBText(mPadding.GetCurSel(), strPaddingType);
 	if (strPaddingType == "zero")
@@ -150,31 +183,7 @@ void CDesPanel::OnBnClickedButton1()
 		pHexControl1.SetData( srcBuffer, srclen - mCDesCrypt.GetPaddingLen());
 	}
 
-	//开始加密
-	mCDesCrypt.SetKey((unsigned char*)mb_Key.c_str(), mb_Key.length());
-	CString strEncryptMode = _T("");
-	EncryptMode.GetWindowTextW(strEncryptMode);
-	if (strEncryptMode == "ECB")
-	{
-		mCDesCrypt.SetMode(MODE_ECB);
-	}
-	else if (strEncryptMode == "CBC")
-	{
-		mCDesCrypt.SetMode(MODE_CBC);
-		mCDesCrypt.SetIv((unsigned char*)mb_Iv.c_str(), mb_Iv.length());
-	}
-	else if (strEncryptMode == "CTR")
-	{
-		mCDesCrypt.SetMode(MODE_CTR);
-	}
-	else if (strEncryptMode == "OFB")
-	{
-		mCDesCrypt.SetMode(MODE_OFB);
-	}
-	else if (strEncryptMode == "CFB")
-	{
-		mCDesCrypt.SetMode(MODE_CFB);
-	}
+	//加密
 	unsigned int dstlen = srclen;
 	BYTE *dstBuffer = (BYTE*)malloc(dstlen);
 	memset(dstBuffer, 0, dstlen);

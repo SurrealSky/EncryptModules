@@ -25,14 +25,18 @@ namespace CipherDes
 		~CDesCrypt(void);
 	private:
 		DES_key_schedule	sched1;
+		DES_key_schedule	sched2;
+		DES_key_schedule	sched3;
 		DES_cblock			ivec;
-		CipherMode				mode;
+		CipherMode			mode;
+		bool				is3des;
 	private:
 		const unsigned int block_size = sizeof(DES_cblock);
 		virtual const unsigned int GetBlockSize(){ return block_size; };
 	public:
 		static std::string GetSSLeay_version();
 		void SetMode(CipherMode m){ mode = m; };
+		void Set3Des(bool tripedes) { is3des = tripedes;}
 		void SetKey(unsigned char *sid, unsigned int len);
 		void SetIv(unsigned char *iv, unsigned int len);
 		void Encrypt(unsigned char *, unsigned int, unsigned char*);
