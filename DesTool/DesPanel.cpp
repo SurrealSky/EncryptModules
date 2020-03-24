@@ -75,8 +75,8 @@ BOOL CDesPanel::OnInitDialog()
 	//加载HexControl
 	pHexControl1.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl1.SetPosition(10, 120, 630, 350);
-	BYTE buffer2[] = "1213123213213 dsdfsafsda";
-	pHexControl1.SetData( buffer2, sizeof(buffer2));
+	BYTE buffer2[] = "12345678";
+	pHexControl1.SetData( buffer2, sizeof(buffer2)-1);
 
 	mCheckHex.SetCheck(FALSE);
 	m3DesCheck.SetCheck(FALSE);
@@ -126,7 +126,6 @@ void CDesPanel::OnBnClickedButton1()
 	else if (strEncryptMode == "CBC")
 	{
 		mCDesCrypt.SetMode(MODE_CBC);
-		mCDesCrypt.SetIv((unsigned char*)mb_Iv.c_str(), mb_Iv.length());
 	}
 	else if (strEncryptMode == "CTR")
 	{
@@ -142,6 +141,8 @@ void CDesPanel::OnBnClickedButton1()
 	}
 	//设置密钥
 	mCDesCrypt.SetKey((unsigned char*)mb_Key.c_str(), mb_Key.length());
+	//设置IV
+	mCDesCrypt.SetIv((unsigned char*)mb_Iv.c_str(), mb_Iv.length());
 	
 	//取出源数据
 	UINT srclen = pHexControl1.GetDataLen();
@@ -183,7 +184,7 @@ void CDesPanel::OnBnClickedButton1()
 		pHexControl1.SetData( srcBuffer, srclen - mCDesCrypt.GetPaddingLen());
 	}
 
-	//加密
+	//开始加密
 	unsigned int dstlen = srclen;
 	BYTE *dstBuffer = (BYTE*)malloc(dstlen);
 	memset(dstBuffer, 0, dstlen);
@@ -197,6 +198,8 @@ void CDesPanel::OnBnClickedButton1()
 //解密
 void CDesPanel::OnBnClickedButton2()
 {
+	//取出3des标识
+	bool is3Des = m3DesCheck.GetCheck();
 	//取出密钥
 	CString strKey = _T("");
 	mKey.GetWindowTextW(strKey);
@@ -227,9 +230,10 @@ void CDesPanel::OnBnClickedButton2()
 	memset(srcBuffer, 0, srclen);
 	pHexControl1.GetData(srcBuffer, srclen);
 
-	//开始解密
 	CDesCrypt mCDesCrypt;
-	mCDesCrypt.SetKey((unsigned char*)mb_Key.c_str(), mb_Key.length());
+	 //设置是否3DES
+	mCDesCrypt.Set3Des(is3Des);
+	//设置解密模式
 	CString strEncryptMode = _T("");
 	EncryptMode.GetWindowTextW(strEncryptMode);
 	if (strEncryptMode == "ECB")
@@ -239,7 +243,6 @@ void CDesPanel::OnBnClickedButton2()
 	else if (strEncryptMode == "CBC")
 	{
 		mCDesCrypt.SetMode(MODE_CBC);
-		mCDesCrypt.SetIv((unsigned char*)mb_Iv.c_str(), mb_Iv.length());
 	}
 	else if (strEncryptMode == "CTR")
 	{
@@ -248,12 +251,18 @@ void CDesPanel::OnBnClickedButton2()
 	else if (strEncryptMode == "OFB")
 	{
 		mCDesCrypt.SetMode(MODE_OFB);
+		mCDesCrypt.SetIv((unsigned char*)mb_Iv.c_str(), mb_Iv.length());
 	}
 	else if (strEncryptMode == "CFB")
 	{
 		mCDesCrypt.SetMode(MODE_CFB);
 	}
+	//设置密钥
+	mCDesCrypt.SetKey((unsigned char*)mb_Key.c_str(), mb_Key.length());
+	//设置IV
+	mCDesCrypt.SetIv((unsigned char*)mb_Iv.c_str(), mb_Iv.length());
 
+	//开始解密
 	BYTE *dstBuffer = (BYTE*)malloc(srclen);
 	memset(dstBuffer, 0, srclen);
 	mCDesCrypt.Decrypt(srcBuffer, srclen, (unsigned char*)dstBuffer);

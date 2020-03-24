@@ -1,6 +1,7 @@
 #pragma once
 #include<string>
 #include"openssl//des.h"
+#include"openssl//evp.h"
 #include"../CommonLib/include/BinaryPadding.h"
 
 //DES的区块长度固定为64比特，密钥也是64位（实际用到了56位，第8、16、24、32、40、48、56、64位是校验位，
