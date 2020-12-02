@@ -2,15 +2,46 @@
 #include "ChaCha20.h"
 
 #ifdef _DEBUG
-#pragma comment(lib,"libsodiumD.lib")
+#pragma comment(lib,"\\debug\\v142\\dynamic\\libsodium.lib")
 #else
-#pragma comment(lib,"libsodium.lib")
+#pragma comment(lib,"\\release\\v142\\dynamic\\libsodium.lib")
 #endif
 
-ChaCha20::ChaCha20()
+ChaCha20::ChaCha20(const char* _type)
 {
-	crypto_aead_chacha20poly1305_keygen(key);
-	randombytes_buf(nonce, sizeof nonce);
+	if (strcmp("SALSA20", _type) == 0)
+	{
+		type = CIPHER_SALSA20;
+		key_size = crypto_stream_salsa20_KEYBYTES;
+		iv_size = crypto_stream_salsa20_NONCEBYTES;
+	}
+	else if (strcmp("CHACHA20", _type) == 0)
+	{
+		type = CIPHER_CHACHA20;
+		key_size = crypto_stream_chacha20_KEYBYTES;
+		iv_size = crypto_stream_chacha20_NONCEBYTES;
+	}
+	else if (strcmp("XSALSA20", _type) == 0)
+	{
+		type = CIPHER_XSALSA20;
+		key_size = crypto_stream_xsalsa20_KEYBYTES;
+		iv_size = crypto_stream_xsalsa20_NONCEBYTES;
+	}
+	else if (strcmp("XCHACHA20", _type) == 0)
+	{
+		type = CIPHER_XCHACHA20;
+		key_size = crypto_stream_chacha20_KEYBYTES;
+		iv_size = crypto_stream_xchacha20_NONCEBYTES;
+	}
+	else if (strcmp("CHACHA20_IETF", _type) == 0)
+	{
+		type = CIPHER_CHACHA20_IETF;
+		key_size = crypto_stream_chacha20_ietf_KEYBYTES;
+		iv_size = crypto_stream_chacha20_ietf_NONCEBYTES;
+	}
+	memset(key,0,sizeof(key));
+	memset(iv, 0, sizeof(iv));
+	ic = 0x21;
 }
 
 
@@ -26,53 +57,110 @@ std::string ChaCha20::Getsodium_version()
 	return ss;
 }
 
-void ChaCha20::SetKey(const unsigned char *k, const unsigned int len1,const unsigned char *n,const unsigned int len2)
+void ChaCha20::InitCipher(const unsigned char *k, const unsigned int len1,const unsigned char *n,const unsigned int len2)
 {
-	if (len1)
-	{
-		if (len1 <= crypto_aead_chacha20poly1305_KEYBYTES)
-		{
-			memset(key, 0, crypto_aead_chacha20poly1305_KEYBYTES);
-			memcpy(key, k, len1);
-		}
-		else
-			memcpy(key, k, crypto_aead_chacha20poly1305_KEYBYTES);
-	}
-	if (len2)
-	{
-		if (len2 <= crypto_aead_chacha20poly1305_NPUBBYTES&&len2 != 0)
-		{
-			memset(nonce, 0, crypto_aead_chacha20poly1305_NPUBBYTES);
-			memcpy(nonce, n, len2);
-		}
-		else
-			memcpy(nonce, n, crypto_aead_chacha20poly1305_NPUBBYTES);
-	}
+	if(len1>sizeof(key))
+		memcpy(key, k, sizeof(key));
+	else
+		memcpy(key, k, len1);
+	if(len2>sizeof(iv))
+		memcpy(iv, n, sizeof(iv));
+	else
+		memcpy(iv, n, len2);
 }
 
 void ChaCha20::Encrypt(unsigned char *srcBuffer, unsigned long long srcLen, unsigned char **dstBuffer, unsigned long long &dstLen)
 {
-	*dstBuffer = (unsigned char*)malloc(srcLen + 0x10);
-	if (crypto_aead_chacha20poly1305_encrypt(*dstBuffer, &dstLen,
-		srcBuffer, srcLen,
-		0, 0,
-		NULL, nonce, key) != 0)
+	*dstBuffer = (unsigned char*)malloc(srcLen);
+	dstLen = srcLen;
+
+	switch (type)
 	{
-		/* message forged! */
+		case CIPHER_SALSA20:
+			{
+				//encryptor_delegate = Sodium.crypto_stream_salsa20_xor_ic;
+				crypto_stream_salsa20_xor_ic(*dstBuffer,srcBuffer, srcLen, iv, ic, key);
+			}
+			break;
+		case CIPHER_CHACHA20:
+			{
+				//encryptor_delegate = Sodium.crypto_stream_chacha20_xor_ic;
+				crypto_stream_chacha20_xor_ic(*dstBuffer, srcBuffer, srcLen, iv, ic, key);
+			}
+			break;
+		case CIPHER_XSALSA20:
+			{
+				//encryptor_delegate = Sodium.crypto_stream_xsalsa20_xor_ic;
+				crypto_stream_xsalsa20_xor_ic(*dstBuffer, srcBuffer, srcLen, iv, ic, key);
+			}
+			break;
+		case CIPHER_XCHACHA20:
+			{
+				//encryptor_delegate = Sodium.crypto_stream_xchacha20_xor_ic;
+				crypto_stream_xchacha20_xor_ic(*dstBuffer, srcBuffer, srcLen, iv, ic, key);
+			}
+			break;
+		case CIPHER_CHACHA20_IETF:
+			{
+				//encryptor_delegate = crypto_stream_chacha20_ietf_xor_ic;
+				crypto_stream_chacha20_ietf_xor_ic(*dstBuffer, srcBuffer, srcLen, iv, ic, key);
+			}
+			break;
 	}
+	//if (crypto_aead_chacha20poly1305_encrypt(*dstBuffer, &dstLen,
+	//	srcBuffer, srcLen,
+	//	0, 0,
+	//	NULL, iv, key) != 0)
+	//{
+	//	/* message forged! */
+	//}
 }
 
 void ChaCha20::Decrypt(unsigned char *srcBuffer, unsigned long long srcLen, unsigned char **dstBuffer, unsigned long long &dstLen)
 {
 	*dstBuffer = (unsigned char*)malloc(srcLen);
-	if (crypto_aead_chacha20poly1305_decrypt(*dstBuffer, &dstLen,
-		NULL,
-		srcBuffer, srcLen,
-		0,
-		0,
-		nonce, key) != 0) {
-		/* message forged! */
+	dstLen = srcLen;
+	switch (type)
+	{
+	case CIPHER_SALSA20:
+	{
+		//encryptor_delegate = Sodium.crypto_stream_salsa20_xor_ic;
+		crypto_stream_salsa20_xor_ic(*dstBuffer,srcBuffer, srcLen, iv, ic, key);
 	}
+	break;
+	case CIPHER_CHACHA20:
+	{
+		//encryptor_delegate = Sodium.crypto_stream_chacha20_xor_ic;
+		crypto_stream_chacha20_xor_ic(*dstBuffer, srcBuffer, srcLen, iv, ic, key);
+	}
+	break;
+	case CIPHER_XSALSA20:
+	{
+		//encryptor_delegate = Sodium.crypto_stream_xsalsa20_xor_ic;
+		crypto_stream_xsalsa20_xor_ic(*dstBuffer, srcBuffer, srcLen, iv, ic, key);
+	}
+	break;
+	case CIPHER_XCHACHA20:
+	{
+		//encryptor_delegate = Sodium.crypto_stream_xchacha20_xor_ic;
+		crypto_stream_xchacha20_xor_ic(*dstBuffer, srcBuffer, srcLen, iv, ic, key);
+	}
+	break;
+	case CIPHER_CHACHA20_IETF:
+	{
+		//encryptor_delegate = crypto_stream_chacha20_ietf_xor_ic;
+		crypto_stream_chacha20_ietf_xor_ic(*dstBuffer, srcBuffer, srcLen, iv, ic, key);
+	}
+	break;
+	}
+	//if (crypto_aead_chacha20poly1305_decrypt(*dstBuffer, &dstLen,
+	//	NULL,
+	//	srcBuffer, srcLen,
+	//	0,
+	//	0,
+	//	iv, key) != 0) {
+	//	/* message forged! */
+	//}
 
 }
 
@@ -84,7 +172,7 @@ void ChaCha20::DecryptAndNoVerify(unsigned char *srcBuffer, unsigned long long s
 		return;
 	}
 	crypto_stream_chacha20_xor_ic
-		(*dstBuffer, srcBuffer, srcLen - crypto_aead_chacha20poly1305_ABYTES, nonce, 1U, key);
+		(*dstBuffer, srcBuffer, srcLen - crypto_aead_chacha20poly1305_ABYTES, iv, 1U, key);
 	dstLen = srcLen - crypto_aead_chacha20poly1305_ABYTES;
 
 }

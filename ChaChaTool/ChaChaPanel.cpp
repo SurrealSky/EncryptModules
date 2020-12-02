@@ -34,6 +34,7 @@ void ChaChaPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK1, mCheckHex);
 	DDX_Check(pDX, IDC_CHECK2, bVerify);
 	DDX_Text(pDX, IDC_EDIT3, strSSLeay_version);
+	DDX_Control(pDX, IDC_COMBO1, mEncType);
 }
 
 
@@ -57,14 +58,22 @@ BOOL ChaChaPanel::OnInitDialog()
 	strSSLeay_version = "";
 	strSSLeay_version.Append(strW.c_str(), strW.size());
 
+	//加载加密方式
+	mEncType.InsertString(0,L"SALSA20");
+	mEncType.InsertString(1, L"CHACHA20");
+	mEncType.InsertString(2, L"XSALSA20");
+	mEncType.InsertString(3, L"XCHACHA20");
+	mEncType.InsertString(4, L"CHACHA20_IETF");
+	mEncType.SetCurSel(4);
+
 	//加载第一个HexControl
 	pHexControl1.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl1.SetPosition(10, 120, 630, 350);
 	BYTE buffer2[] = "1213123213213 dsdfsafsda";
 	pHexControl1.SetData( buffer2, sizeof(buffer2));
 
-	mKey = "356BAA7CC713F17F0C0126A47C7FFFBB393B723CEF8B0065127D8678ADE9C53E";
-	mNonce = "A65B988BAED0375A";
+	mKey = "466bafda0b4d40ccb15171ee7aa0b64da6b99da7fae23fe755d5d7dfabce9aa4";
+	mNonce = "abbb4caf0b874cda98feda57";
 	mCheckHex.SetCheck(TRUE);
 	bVerify = FALSE;
 	UpdateData(FALSE);
@@ -76,6 +85,13 @@ BOOL ChaChaPanel::OnInitDialog()
 void ChaChaPanel::OnBnClickedButton1()
 {
 	UpdateData(TRUE);
+
+	//取出type
+	CString strType;
+	mEncType.GetWindowTextW(strType);
+	std::string mb_type= MyWideCharToMultiByte((BYTE*)strType.GetBuffer(0), strType.GetLength());
+
+	//取出KEY
 	std::string mb_Key = MyWideCharToMultiByte((BYTE*)mKey.GetBuffer(0), mKey.GetLength());
 	if (mCheckHex.GetCheck() == TRUE)
 	{
@@ -90,6 +106,7 @@ void ChaChaPanel::OnBnClickedButton1()
 		mb_Nonce = StrToHex((BYTE*)mb_Nonce.c_str(), mb_Nonce.length());
 	}
 
+
 	//取出源数据
 	unsigned __int64 srclen = pHexControl1.GetDataLen();
 	if (srclen == 0)
@@ -98,11 +115,12 @@ void ChaChaPanel::OnBnClickedButton1()
 		return;
 	}
 	BYTE *srcBuffer = (BYTE*)malloc(srclen);
+	if (srcBuffer == 0) return;
 	memset(srcBuffer, 0, srclen);
 	pHexControl1.GetData(srcBuffer, srclen);
 
-	ChaCha20 mChaCha20;
-	mChaCha20.SetKey((unsigned char*)mb_Key.c_str(), crypto_aead_chacha20poly1305_KEYBYTES, (unsigned char*)mb_Nonce.c_str(), crypto_aead_chacha20poly1305_NPUBBYTES);
+	ChaCha20 mChaCha20(mb_type.c_str());
+	mChaCha20.InitCipher((unsigned char*)mb_Key.c_str(), mb_Key.size(), (unsigned char*)mb_Nonce.c_str(), mb_Nonce.size());
 	unsigned long long dstlen =0;
 	unsigned char *dstbuffer=NULL;
 	mChaCha20.Encrypt(srcBuffer, srclen, &dstbuffer, dstlen);
@@ -117,6 +135,13 @@ void ChaChaPanel::OnBnClickedButton1()
 void ChaChaPanel::OnBnClickedButton2()
 {
 	UpdateData(TRUE);
+
+	//取出type
+	CString strType;
+	mEncType.GetWindowTextW(strType);
+	std::string mb_type = MyWideCharToMultiByte((BYTE*)strType.GetBuffer(0), strType.GetLength());
+
+	//取出key
 	std::string mb_Key = MyWideCharToMultiByte((BYTE*)mKey.GetBuffer(0), mKey.GetLength());
 	if (mCheckHex.GetCheck() == TRUE)
 	{
@@ -140,16 +165,14 @@ void ChaChaPanel::OnBnClickedButton2()
 	}
 	BYTE *srcBuffer = (BYTE*)malloc(srclen);
 	memset(srcBuffer, 0, srclen);
+	if (srcBuffer == 0) return;
 	pHexControl1.GetData(srcBuffer, srclen);
 
-	ChaCha20 mChaCha20;
-	mChaCha20.SetKey((unsigned char*)mb_Key.c_str(), crypto_aead_chacha20poly1305_KEYBYTES, (unsigned char*)mb_Nonce.c_str(), crypto_aead_chacha20poly1305_NPUBBYTES);
+	ChaCha20 mChaCha20(mb_type.c_str());
+	mChaCha20.InitCipher((unsigned char*)mb_Key.c_str(), mb_Key.size(), (unsigned char*)mb_Nonce.c_str(), mb_Nonce.size());
 	unsigned long long dstlen = 0;
 	unsigned char *dstbuffer = NULL;
-	if (bVerify)
-		mChaCha20.Decrypt(srcBuffer, srclen, &dstbuffer, dstlen);
-	else
-		mChaCha20.DecryptAndNoVerify(srcBuffer, srclen, &dstbuffer, dstlen);
+	mChaCha20.Decrypt(srcBuffer, srclen, &dstbuffer, dstlen);
 	if (dstlen)
 	{
 		pHexControl1.SetData( dstbuffer, dstlen);

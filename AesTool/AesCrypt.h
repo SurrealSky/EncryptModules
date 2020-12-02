@@ -1,6 +1,7 @@
 #pragma once
 #include"openssl//aes.h"
 #include"../CommonLib/include/BinaryPadding.h"
+#include <string>
 
 //AES的区块长度固定为128 比特，密钥长度则可以是128，192或256比特；
 //解密时使用的轮密钥顺序与加密时相反(所以设置密钥函数不同)，但仍使用同样的轮密钥。

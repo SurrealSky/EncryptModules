@@ -31,11 +31,11 @@ public:
 	CString mNonce;
 	CButton mCheckHex;
 	BOOL bVerify;
-public:
+	CString strSSLeay_version;
+	CComboBox mEncType;
 public:
 	std::string HexToStr(BYTE *pbDest, int nLen);
 	std::string StrToHex(BYTE *pbDest, int nLen);
 	std::string MyWideCharToMultiByte(BYTE *pbDest, int nLen);
 	std::string MyMultiByteToWideChar(BYTE *pbDest, int nLen);
-	CString strSSLeay_version;
 };
