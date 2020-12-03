@@ -33,6 +33,7 @@ public:
 	BOOL bVerify;
 	CString strSSLeay_version;
 	CComboBox mEncType;
+	CString mIC;
 public:
 	std::string HexToStr(BYTE *pbDest, int nLen);
 	std::string StrToHex(BYTE *pbDest, int nLen);

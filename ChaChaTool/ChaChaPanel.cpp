@@ -18,6 +18,7 @@ ChaChaPanel::ChaChaPanel(CWnd* pParent /*=NULL*/)
 	, mNonce(_T(""))
 	, bVerify(FALSE)
 	, strSSLeay_version(_T(""))
+	, mIC(_T(""))
 {
 
 }
@@ -35,6 +36,7 @@ void ChaChaPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK2, bVerify);
 	DDX_Text(pDX, IDC_EDIT3, strSSLeay_version);
 	DDX_Control(pDX, IDC_COMBO1, mEncType);
+	DDX_Text(pDX, IDC_EDIT4, mIC);
 }
 
 
@@ -76,6 +78,7 @@ BOOL ChaChaPanel::OnInitDialog()
 	mNonce = "abbb4caf0b874cda98feda57";
 	mCheckHex.SetCheck(TRUE);
 	bVerify = FALSE;
+	mIC = "0";
 	UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -105,7 +108,10 @@ void ChaChaPanel::OnBnClickedButton1()
 		//16进制IV数据
 		mb_Nonce = StrToHex((BYTE*)mb_Nonce.c_str(), mb_Nonce.length());
 	}
-
+	//取出IC
+	unsigned int ic = 0;
+	std::string mb_ic = MyWideCharToMultiByte((BYTE*)mIC.GetBuffer(0), mIC.GetLength());
+	ic = strtol(mb_ic.c_str(), 0, 10);
 
 	//取出源数据
 	unsigned __int64 srclen = pHexControl1.GetDataLen();
@@ -120,7 +126,7 @@ void ChaChaPanel::OnBnClickedButton1()
 	pHexControl1.GetData(srcBuffer, srclen);
 
 	ChaCha20 mChaCha20(mb_type.c_str());
-	mChaCha20.InitCipher((unsigned char*)mb_Key.c_str(), mb_Key.size(), (unsigned char*)mb_Nonce.c_str(), mb_Nonce.size());
+	mChaCha20.InitCipher((unsigned char*)mb_Key.c_str(), mb_Key.size(), (unsigned char*)mb_Nonce.c_str(), mb_Nonce.size(),ic);
 	unsigned long long dstlen =0;
 	unsigned char *dstbuffer=NULL;
 	mChaCha20.Encrypt(srcBuffer, srclen, &dstbuffer, dstlen);
@@ -156,6 +162,11 @@ void ChaChaPanel::OnBnClickedButton2()
 		mb_Nonce = StrToHex((BYTE*)mb_Nonce.c_str(), mb_Nonce.length());
 	}
 
+	//取出IC
+	unsigned int ic = 0;
+	std::string mb_ic = MyWideCharToMultiByte((BYTE*)mIC.GetBuffer(0), mIC.GetLength());
+	ic = strtol(mb_ic.c_str(), 0, 10);
+
 	//取出源数据
 	UINT srclen = pHexControl1.GetDataLen();
 	if (srclen == 0)
@@ -164,12 +175,12 @@ void ChaChaPanel::OnBnClickedButton2()
 		return;
 	}
 	BYTE *srcBuffer = (BYTE*)malloc(srclen);
-	memset(srcBuffer, 0, srclen);
 	if (srcBuffer == 0) return;
+	memset(srcBuffer, 0, srclen);
 	pHexControl1.GetData(srcBuffer, srclen);
 
 	ChaCha20 mChaCha20(mb_type.c_str());
-	mChaCha20.InitCipher((unsigned char*)mb_Key.c_str(), mb_Key.size(), (unsigned char*)mb_Nonce.c_str(), mb_Nonce.size());
+	mChaCha20.InitCipher((unsigned char*)mb_Key.c_str(), mb_Key.size(), (unsigned char*)mb_Nonce.c_str(), mb_Nonce.size(),ic);
 	unsigned long long dstlen = 0;
 	unsigned char *dstbuffer = NULL;
 	mChaCha20.Decrypt(srcBuffer, srclen, &dstbuffer, dstlen);

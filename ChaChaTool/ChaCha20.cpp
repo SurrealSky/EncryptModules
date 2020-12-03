@@ -57,7 +57,7 @@ std::string ChaCha20::Getsodium_version()
 	return ss;
 }
 
-void ChaCha20::InitCipher(const unsigned char *k, const unsigned int len1,const unsigned char *n,const unsigned int len2)
+void ChaCha20::InitCipher(const unsigned char *k, const unsigned int len1,const unsigned char *n,const unsigned int len2,unsigned int _ic)
 {
 	if(len1>sizeof(key))
 		memcpy(key, k, sizeof(key));
@@ -67,6 +67,7 @@ void ChaCha20::InitCipher(const unsigned char *k, const unsigned int len1,const 
 		memcpy(iv, n, sizeof(iv));
 	else
 		memcpy(iv, n, len2);
+	ic = _ic;
 }
 
 void ChaCha20::Encrypt(unsigned char *srcBuffer, unsigned long long srcLen, unsigned char **dstBuffer, unsigned long long &dstLen)

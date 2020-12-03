@@ -22,7 +22,7 @@ private:
 	unsigned int type;
 public:
 	static std::string Getsodium_version();
-	void InitCipher(const unsigned char *key, const unsigned int len1,const unsigned char *nonce, const unsigned int len2);
+	void InitCipher(const unsigned char *key, const unsigned int len1,const unsigned char *nonce, const unsigned int len2,unsigned int ic);
 	void Encrypt(unsigned char *srcBuffer,unsigned long long srcLen,unsigned char **dstBuffer,unsigned long long &dstLen);
 	void Decrypt(unsigned char *srcBuffer, unsigned long long srcLen, unsigned char **dstBuffer, unsigned long long &dstLen);
 	void DecryptAndNoVerify(unsigned char *srcBuffer, unsigned long long srcLen, unsigned char **dstBuffer, unsigned long long &dstLen);
