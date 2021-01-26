@@ -44,19 +44,24 @@ BOOL CEcdhPanel::OnInitDialog()
 	//加载第一个HexControl
 	pHexControl1.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl1.SetPosition(10, 40, 600, 35);
+	pHexControl1.SetEditMode(EditMode::INSERT);
 
 	//加载第二个HexControl
 	pHexControl2.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl2.SetPosition(10, 100, 600, 70);
+	pHexControl2.SetEditMode(EditMode::INSERT);
 
 	pHexControl3.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl3.SetPosition(10, 245, 600, 35);
+	pHexControl3.SetEditMode(EditMode::INSERT);
 
 	pHexControl4.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl4.SetPosition(10, 305, 600, 70);
+	pHexControl4.SetEditMode(EditMode::INSERT);
 
 	pHexControl5.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl5.SetPosition(10, 395, 600, 35);
+	pHexControl5.SetEditMode(EditMode::INSERT);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE

@@ -51,6 +51,7 @@ BOOL CBase64Panel::OnInitDialog()
 
 	pHexControl1.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl1.SetPosition(20, 205, 640, 215);
+	pHexControl1.SetEditMode(EditMode::INSERT);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE

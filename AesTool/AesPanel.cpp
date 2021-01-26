@@ -103,6 +103,7 @@ BOOL CAesPanel::OnInitDialog()
 		0xe1, 0x9a, 0x40
 	};
 	pHexControl1.SetData( buffer2, sizeof(buffer2));
+	pHexControl1.SetEditMode(EditMode::INSERT);
 
 	mCheckHex.SetCheck(TRUE);
 	mKey.SetWindowTextW(_T("5D2BEC0744086E2BDEDA0B04CF134E87"));

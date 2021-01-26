@@ -77,6 +77,7 @@ BOOL CDesPanel::OnInitDialog()
 	pHexControl1.SetPosition(10, 120, 630, 350);
 	BYTE buffer2[] = "12345678";
 	pHexControl1.SetData( buffer2, sizeof(buffer2)-1);
+	pHexControl1.SetEditMode(EditMode::INSERT);
 
 	mCheckHex.SetCheck(FALSE);
 	m3DesCheck.SetCheck(FALSE);

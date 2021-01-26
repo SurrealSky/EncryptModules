@@ -74,6 +74,7 @@ BOOL TeaPanel::OnInitDialog()
 	pHexControl1.SetPosition(10, 90, 630, 350);
 	BYTE buffer2[] ="12345678901234567890test";
 	pHexControl1.SetData( buffer2, sizeof(buffer2));
+	pHexControl1.SetEditMode(EditMode::INSERT);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE

@@ -71,6 +71,7 @@ BOOL KeyPanel::OnInitDialog()
 
 	pHexControl1.CreateHexView(AfxGetInstanceHandle(), m_hWnd);
 	pHexControl1.SetPosition(10, 100, 630, 350);
+	pHexControl1.SetEditMode(EditMode::INSERT);
 
 	UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control

@@ -73,6 +73,7 @@ BOOL ChaChaPanel::OnInitDialog()
 	pHexControl1.SetPosition(10, 120, 630, 350);
 	BYTE buffer2[] = "1213123213213 dsdfsafsda";
 	pHexControl1.SetData( buffer2, sizeof(buffer2));
+	pHexControl1.SetEditMode(EditMode::INSERT);
 
 	mKey = "466bafda0b4d40ccb15171ee7aa0b64da6b99da7fae23fe755d5d7dfabce9aa4";
 	mNonce = "abbb4caf0b874cda98feda57";
