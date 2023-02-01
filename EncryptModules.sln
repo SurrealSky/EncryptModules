@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32407.337
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AesTool", "AesTool\AesTool.vcxproj", "{216D325E-2F87-4CD3-8AAA-EAFB30B18C1C}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyTool", "KeyTool\KeyTool.vcxproj", "{BDCD4605-BA40-442C-9370-2A61F042EF20}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TeaTool", "TeaTool\TeaTool.vcxproj", "{A811B8D5-1FB6-4EEC-853B-4817B43AEE67}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RegSAM", "RegSAM\RegSAM.vcxproj", "{41C203AA-B579-456F-82EE-389B915A5CCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,8 +71,19 @@ Global
 		{A811B8D5-1FB6-4EEC-853B-4817B43AEE67}.Release|x64.ActiveCfg = Release|Win32
 		{A811B8D5-1FB6-4EEC-853B-4817B43AEE67}.Release|x86.ActiveCfg = Release|Win32
 		{A811B8D5-1FB6-4EEC-853B-4817B43AEE67}.Release|x86.Build.0 = Release|Win32
+		{41C203AA-B579-456F-82EE-389B915A5CCF}.Debug|x64.ActiveCfg = Debug|x64
+		{41C203AA-B579-456F-82EE-389B915A5CCF}.Debug|x64.Build.0 = Debug|x64
+		{41C203AA-B579-456F-82EE-389B915A5CCF}.Debug|x86.ActiveCfg = Debug|Win32
+		{41C203AA-B579-456F-82EE-389B915A5CCF}.Debug|x86.Build.0 = Debug|Win32
+		{41C203AA-B579-456F-82EE-389B915A5CCF}.Release|x64.ActiveCfg = Release|x64
+		{41C203AA-B579-456F-82EE-389B915A5CCF}.Release|x64.Build.0 = Release|x64
+		{41C203AA-B579-456F-82EE-389B915A5CCF}.Release|x86.ActiveCfg = Release|Win32
+		{41C203AA-B579-456F-82EE-389B915A5CCF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DC285AD-8D99-444C-B40E-8A69BBCE9F3E}
 	EndGlobalSection
 EndGlobal
