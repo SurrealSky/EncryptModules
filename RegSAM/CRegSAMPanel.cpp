@@ -5,6 +5,7 @@
 #include "RegSAM.h"
 #include "CRegSAMPanel.h"
 #include "afxdialogex.h"
+#include "SamDecrypt.h"
 
 
 // CRegSAMPanel 对话框
@@ -32,3 +33,17 @@ END_MESSAGE_MAP()
 
 
 // CRegSAMPanel 消息处理程序
+
+
+BOOL CRegSAMPanel::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	SamDecrypt samDec;
+	samDec.getensamlm(samDec.samInfo.user_V);
+	samDec.getensamnt(samDec.samInfo.user_V);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // 异常: OCX 属性页应返回 FALSE
+}

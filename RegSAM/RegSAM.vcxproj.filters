@@ -33,6 +33,9 @@
     <ClCompile Include="ChildView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="SamDecrypt.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="RegSAM.def">
@@ -68,6 +71,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ChildView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SamDecrypt.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
